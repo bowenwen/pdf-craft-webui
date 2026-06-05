@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 40px auto;
             padding: 20px;
         }
@@ -33,6 +33,44 @@
         .subtitle {
             color: #666;
             margin-bottom: 30px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            border: none;
+            background: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+
+        .tab:hover {
+            color: #333;
+        }
+
+        .tab.active {
+            color: #2196F3;
+            border-bottom-color: #2196F3;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .card {
@@ -103,6 +141,12 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
         .checkbox-group {
@@ -204,11 +248,11 @@
         .download-btn {
             background-color: #4CAF50;
             color: white;
-            padding: 12px 30px;
+            padding: 10px 24px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             text-decoration: none;
             display: inline-block;
         }
@@ -253,6 +297,251 @@
             font-size: 13px;
             margin-top: 8px;
         }
+
+        /* File Manager */
+        .file-manager-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .file-manager-header h2 {
+            font-size: 1.3em;
+            color: #2c3e50;
+        }
+
+        .refresh-btn {
+            background-color: #78909C;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .refresh-btn:hover {
+            background-color: #546E7A;
+        }
+
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .task-table th {
+            text-align: left;
+            padding: 12px 10px;
+            background-color: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            font-size: 13px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .task-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .task-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-badge.running {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-badge.completed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge.failed {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .format-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .format-badge.epub {
+            background-color: #e8eaf6;
+            color: #283593;
+        }
+
+        .format-badge.markdown {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 2px;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn.download {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .action-btn.download:hover {
+            background-color: #388E3C;
+        }
+
+        .action-btn.reconvert {
+            background-color: #FF9800;
+            color: white;
+        }
+
+        .action-btn.reconvert:hover {
+            background-color: #F57C00;
+        }
+
+        .action-btn.delete {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .action-btn.delete:hover {
+            background-color: #d32f2f;
+        }
+
+        .action-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .no-tasks {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal-btn.primary {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background-color: #1976D2;
+        }
+
+        .modal-btn.secondary {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .modal-btn.secondary:hover {
+            background-color: #ccc;
+        }
+
+        .file-name {
+            font-weight: 500;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .date-cell {
+            color: #777;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .progress-inline {
+            width: 80px;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .progress-inline-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -260,35 +549,155 @@
         <h1>PDF Craft</h1>
         <p class="subtitle">Convert PDF files to EPUB or Markdown using DeepSeek OCR</p>
 
-        <div class="card">
-            <div class="upload-area" id="uploadArea">
-                <p>Drag and drop your PDF file here or click to browse</p>
-                <input type="file" id="fileInput" accept=".pdf">
-                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose PDF File</button>
-                <div class="file-info" id="fileInfo"></div>
+        <div class="tabs">
+            <button class="tab active" data-tab="upload" onclick="switchTab('upload')">Upload &amp; Convert</button>
+            <button class="tab" data-tab="files" onclick="switchTab('files')">File Manager</button>
+        </div>
+
+        <!-- Upload Tab -->
+        <div class="tab-content active" id="tab-upload">
+            <div class="card">
+                <div class="upload-area" id="uploadArea">
+                    <p>Drag and drop your PDF file here or click to browse</p>
+                    <input type="file" id="fileInput" accept=".pdf">
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose PDF File</button>
+                    <div class="file-info" id="fileInfo"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="outputFormat">Output Format</label>
+                        <select id="outputFormat">
+                            <option value="epub">EPUB</option>
+                            <option value="markdown" selected>Markdown</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ocrSize">OCR Model</label>
+                        <select id="ocrSize">
+                            <option value="gundam" selected>Gundam (Best quality)</option>
+                            <option value="large">Large</option>
+                            <option value="base">Base</option>
+                            <option value="small">Small</option>
+                            <option value="tiny">Tiny (Fastest)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookTitle">Book Title</label>
+                        <input type="text" id="bookTitle" placeholder="Untitled">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookAuthor">Author</label>
+                        <input type="text" id="bookAuthor" placeholder="Author name">
+                    </div>
+                </div>
+
+                <p class="advanced-toggle" onclick="toggleAdvanced()">Show Advanced Options</p>
+                <div class="advanced-section" id="advancedSection">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="language">Language</label>
+                            <select id="language">
+                                <option value="en" selected>English</option>
+                                <option value="zh">Chinese</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dpi">DPI</label>
+                            <input type="text" id="dpi" value="300">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Options</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="includeCover" checked>
+                                <label for="includeCover">Include Cover</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="includeFootnotes" checked>
+                                <label for="includeFootnotes">Include Footnotes</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tocAssumed" checked>
+                                <label for="tocAssumed">Assume TOC</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ignorePdfErrors">
+                                <label for="ignorePdfErrors">Ignore PDF Errors</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ignoreOcrErrors">
+                                <label for="ignoreOcrErrors">Ignore OCR Errors</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="convert-btn" id="convertBtn" onclick="startConversion()">Start Conversion</button>
             </div>
 
+            <div class="card status-area" id="statusArea">
+                <div class="status-bar">
+                    <h3>Conversion Status</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="status-message" id="statusMessage">Processing...</p>
+                    <div class="error-details" id="errorDetails"></div>
+                    <button class="toggle-details" id="toggleDetails" style="display:none" onclick="toggleErrorDetails()">Show technical details</button>
+                </div>
+                <div class="download-area" id="downloadArea">
+                    <a class="download-btn" id="downloadBtn" href="#">Download Result</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Manager Tab -->
+        <div class="tab-content" id="tab-files">
+            <div class="card">
+                <div class="file-manager-header">
+                    <h2>File Manager</h2>
+                    <button class="refresh-btn" onclick="loadTasks()">Refresh</button>
+                </div>
+                <div id="tasksContainer">
+                    <div class="no-tasks">No files uploaded yet.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reconvert Modal -->
+    <div class="modal-overlay" id="reconvertModal">
+        <div class="modal">
+            <h3>Reconvert to Different Format</h3>
+            <p id="reconvertFileInfo" style="margin-bottom:15px;color:#666;"></p>
+
             <div class="form-group">
-                <label for="outputFormat">Output Format</label>
-                <select id="outputFormat">
-                    <option value="epub" selected>EPUB</option>
+                <label for="reconvertFormat">Target Format</label>
+                <select id="reconvertFormat">
+                    <option value="epub">EPUB</option>
                     <option value="markdown">Markdown</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="bookTitle">Book Title</label>
-                <input type="text" id="bookTitle" placeholder="Untitled">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reconvertTitle">Book Title</label>
+                    <input type="text" id="reconvertTitle" placeholder="Untitled">
+                </div>
+                <div class="form-group">
+                    <label for="reconvertAuthor">Author</label>
+                    <input type="text" id="reconvertAuthor" placeholder="Author name">
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="bookAuthor">Author</label>
-                <input type="text" id="bookAuthor" placeholder="Author name">
-            </div>
-
-            <div class="form-group">
-                <label for="ocrSize">OCR Model</label>
-                <select id="ocrSize">
+                <label for="reconvertOcrSize">OCR Model</label>
+                <select id="reconvertOcrSize">
                     <option value="gundam" selected>Gundam (Best quality)</option>
                     <option value="large">Large</option>
                     <option value="base">Base</option>
@@ -297,63 +706,19 @@
                 </select>
             </div>
 
-            <p class="advanced-toggle" onclick="toggleAdvanced()">Show Advanced Options</p>
-            <div class="advanced-section" id="advancedSection">
-                <div class="form-group">
-                    <label for="language">Language</label>
-                    <select id="language">
-                        <option value="en" selected>English</option>
-                        <option value="zh">Chinese</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="dpi">DPI</label>
-                    <input type="text" id="dpi" value="300">
-                </div>
-
-                <div class="form-group">
-                    <label>Options</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="includeCover" checked>
-                            <label for="includeCover">Include Cover</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="includeFootnotes" checked>
-                            <label for="includeFootnotes">Include Footnotes</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tocAssumed" checked>
-                            <label for="tocAssumed">Assume TOC</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="ignorePdfErrors">
-                            <label for="ignorePdfErrors">Ignore PDF Errors</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="ignoreOcrErrors">
-                            <label for="ignoreOcrErrors">Ignore OCR Errors</label>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="reconvertLanguage">Language</label>
+                <select id="reconvertLanguage">
+                    <option value="en" selected>English</option>
+                    <option value="zh">Chinese</option>
+                </select>
             </div>
 
-            <button class="convert-btn" id="convertBtn" onclick="startConversion()">Start Conversion</button>
-        </div>
+            <div id="reconvertStatus" style="margin-top:10px;"></div>
 
-        <div class="card status-area" id="statusArea">
-            <div class="status-bar">
-                <h3>Conversion Status</h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <p class="status-message" id="statusMessage">Processing...</p>
-                <div class="error-details" id="errorDetails"></div>
-                <button class="toggle-details" id="toggleDetails" style="display:none" onclick="toggleErrorDetails()">Show technical details</button>
-            </div>
-            <div class="download-area" id="downloadArea">
-                <a class="download-btn" id="downloadBtn" href="#">Download Result</a>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeReconvertModal()">Cancel</button>
+                <button class="modal-btn primary" id="reconvertSubmit" onclick="submitReconvert()">Convert</button>
             </div>
         </div>
     </div>
@@ -361,8 +726,19 @@
     <script>
         let selectedFile = null;
         let currentTaskId = null;
+        let pollingInterval = null;
+        let fileManagerInterval = null;
 
-        // File upload handling
+        // ---- Tab Switching ----
+        function switchTab(name) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${name}"]`).classList.add('active');
+            document.getElementById(`tab-${name}`).classList.add('active');
+            if (name === 'files') loadTasks();
+        }
+
+        // ---- File Upload ----
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
@@ -409,6 +785,7 @@
             }
         }
 
+        // ---- Error Display ----
         function toggleErrorDetails() {
             const details = document.getElementById('errorDetails');
             const btn = document.getElementById('toggleDetails');
@@ -446,6 +823,7 @@
             }
         }
 
+        // ---- Conversion ----
         async function startConversion() {
             if (!selectedFile) {
                 alert('Please select a PDF file');
@@ -462,7 +840,9 @@
             convertBtn.textContent = 'Converting...';
             statusArea.classList.add('visible');
             statusMessage.textContent = 'Uploading PDF...';
+            statusMessage.style.color = '';
             progressFill.style.width = '10%';
+            progressFill.style.backgroundColor = '#4CAF50';
             downloadArea.classList.remove('visible');
 
             const formData = new FormData();
@@ -491,11 +871,7 @@
                 if (!response.ok) {
                     const text = await response.text();
                     let parsed;
-                    try {
-                        parsed = JSON.parse(text);
-                    } catch {
-                        parsed = null;
-                    }
+                    try { parsed = JSON.parse(text); } catch { parsed = null; }
 
                     const errorObj = parsed && parsed.detail ? {
                         message: typeof parsed.detail === 'string' ? parsed.detail : JSON.stringify(parsed.detail),
@@ -516,11 +892,9 @@
                 statusMessage.style.color = '';
                 progressFill.style.width = '20%';
 
-                // Poll for status
                 pollStatus();
 
             } catch (error) {
-                const convertBtn = document.getElementById('convertBtn');
                 convertBtn.disabled = false;
                 convertBtn.textContent = 'Start Conversion';
             }
@@ -533,17 +907,15 @@
             const downloadBtn = document.getElementById('downloadBtn');
             const convertBtn = document.getElementById('convertBtn');
 
-            const interval = setInterval(async () => {
+            if (pollingInterval) clearInterval(pollingInterval);
+
+            pollingInterval = setInterval(async () => {
                 try {
-                    const response = await fetch(`/api/task/${currentTaskId}`);
+                    const response = await fetch(`/api/tasks/${currentTaskId}`);
                     if (!response.ok) {
                         const text = await response.text();
                         let parsed;
-                        try {
-                            parsed = JSON.parse(text);
-                        } catch {
-                            parsed = null;
-                        }
+                        try { parsed = JSON.parse(text); } catch { parsed = null; }
 
                         const errorObj = parsed && parsed.detail ? {
                             message: typeof parsed.detail === 'string' ? parsed.detail : JSON.stringify(parsed.detail),
@@ -554,12 +926,13 @@
                             traceback: text || '',
                         };
 
-                        clearInterval(interval);
+                        clearInterval(pollingInterval);
                         showError(errorObj.message, errorObj);
                         convertBtn.disabled = false;
                         convertBtn.textContent = 'Try Again';
                         return;
                     }
+
                     const data = await response.json();
 
                     if (data.status === 'running') {
@@ -568,17 +941,18 @@
                         progressFill.style.width = '50%';
                         progressFill.style.backgroundColor = '#2196F3';
                     } else if (data.status === 'completed') {
-                        clearInterval(interval);
+                        clearInterval(pollingInterval);
                         progressFill.style.width = '100%';
                         progressFill.style.backgroundColor = '#4CAF50';
-                        statusMessage.textContent = 'Conversion completed!';
+                        statusMessage.textContent = `Conversion completed! (Format: ${data.output_format})`;
                         statusMessage.style.color = '';
                         downloadArea.classList.add('visible');
                         downloadBtn.href = `/api/download/${currentTaskId}`;
+                        downloadBtn.textContent = `Download ${data.output_filename}`;
                         convertBtn.disabled = false;
                         convertBtn.textContent = 'Convert Another';
                     } else if (data.status === 'failed') {
-                        clearInterval(interval);
+                        clearInterval(pollingInterval);
                         const errorObj = data.error || {
                             message: data.progress || 'Unknown error',
                             type: 'Error',
@@ -588,19 +962,242 @@
                         convertBtn.disabled = false;
                         convertBtn.textContent = 'Try Again';
                     } else if (data.status === 'pending') {
-                        statusMessage.textContent = data.progress;
+                        statusMessage.textContent = data.progress || 'Queued...';
                         statusMessage.style.color = '';
                         progressFill.style.width = '10%';
                         progressFill.style.backgroundColor = '#4CAF50';
                     }
 
                 } catch (error) {
-                    clearInterval(interval);
+                    clearInterval(pollingInterval);
                     showError('Could not reach server: ' + error.message, null);
                     convertBtn.disabled = false;
                     convertBtn.textContent = 'Try Again';
                 }
             }, 2000);
+        }
+
+        // ---- File Manager ----
+        function formatSize(bytes) {
+            if (!bytes) return '-';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function formatDate(timestamp) {
+            if (!timestamp) return '-';
+            const d = new Date(timestamp * 1000);
+            return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+        }
+
+        function getProgressPercent(status) {
+            switch (status) {
+                case 'pending': return 10;
+                case 'running': return 50;
+                case 'completed': return 100;
+                case 'failed': return 0;
+                default: return 0;
+            }
+        }
+
+        function getProgressColor(status) {
+            switch (status) {
+                case 'pending': return '#ff9800';
+                case 'running': return '#2196F3';
+                case 'completed': return '#4CAF50';
+                case 'failed': return '#f44336';
+                default: return '#999';
+            }
+        }
+
+        function renderTasks(tasks) {
+            const container = document.getElementById('tasksContainer');
+            if (!tasks || tasks.length === 0) {
+                container.innerHTML = '<div class="no-tasks">No files uploaded yet.</div>';
+                return;
+            }
+
+            let html = `
+                <table class="task-table">
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Status</th>
+                            <th>Format</th>
+                            <th>Progress</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            for (const task of tasks) {
+                const fmt = task.output_format || '-';
+                const fmtClass = (fmt === 'epub' || fmt === 'markdown') ? fmt : '';
+                const pct = getProgressPercent(task.status);
+                const col = getProgressColor(task.status);
+
+                html += `
+                    <tr id="task-row-${task.task_id}">
+                        <td class="file-name" title="${task.filename || task.task_id}">${task.filename || task.task_id}</td>
+                        <td><span class="status-badge ${task.status}">${task.status}</span></td>
+                        <td><span class="format-badge ${fmtClass}">${fmt}</span></td>
+                        <td>
+                            <div class="progress-inline">
+                                <div class="progress-inline-fill" style="width:${pct}%;background-color:${col}"></div>
+                            </div>
+                            <span style="font-size:12px;color:#777">${task.progress || ''}</span>
+                        </td>
+                        <td class="date-cell">${formatDate(task.created_at)}</td>
+                        <td style="white-space:nowrap">`;
+
+                if (task.status === 'completed') {
+                    html += `<a class="action-btn download" href="/api/download/${task.task_id}">Download</a>`;
+                }
+
+                if (task.status === 'completed') {
+                    const other = fmt === 'markdown' ? 'epub' : 'markdown';
+                    html += `<button class="action-btn reconvert" onclick="openReconvertModal('${task.task_id}', '${task.filename || ''}')">To ${other.toUpperCase()}</button>`;
+                }
+
+                html += `<button class="action-btn delete" onclick="deleteTask('${task.task_id}')">Delete</button>`;
+
+                html += `</td></tr>`;
+            }
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        async function loadTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                if (!response.ok) return;
+                const tasks = await response.json();
+                renderTasks(tasks);
+            } catch (e) {
+                // silently fail
+            }
+        }
+
+        async function deleteTask(taskId) {
+            if (!confirm('Delete this file and all its outputs?')) return;
+            try {
+                const response = await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadTasks();
+                }
+            } catch (e) {
+                alert('Failed to delete');
+            }
+        }
+
+        // ---- Reconvert Modal ----
+        let reconvertTaskId = null;
+
+        function openReconvertModal(taskId, filename) {
+            reconvertTaskId = taskId;
+            document.getElementById('reconvertFileInfo').textContent = `File: ${filename}`;
+            document.getElementById('reconvertStatus').innerHTML = '';
+            document.getElementById('reconvertSubmit').disabled = false;
+            document.getElementById('reconvertSubmit').textContent = 'Convert';
+            document.getElementById('reconvertModal').classList.add('visible');
+
+            const fmt = document.getElementById('reconvertFormat');
+            if (fmt) {
+                fmt.value = '';
+            }
+        }
+
+        function closeReconvertModal() {
+            document.getElementById('reconvertModal').classList.remove('visible');
+            reconvertTaskId = null;
+        }
+
+        async function submitReconvert() {
+            if (!reconvertTaskId) return;
+
+            const submitBtn = document.getElementById('reconvertSubmit');
+            const statusDiv = document.getElementById('reconvertStatus');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Converting...';
+            statusDiv.innerHTML = '<span style="color:#2196F3">Starting reconvert...</span>';
+
+            const formData = new FormData();
+            formData.append('target_format', document.getElementById('reconvertFormat').value);
+            formData.append('ocr_size', document.getElementById('reconvertOcrSize').value);
+            formData.append('language', document.getElementById('reconvertLanguage').value);
+
+            const title = document.getElementById('reconvertTitle').value;
+            const author = document.getElementById('reconvertAuthor').value;
+            if (title) formData.append('book_title', title);
+            if (author) formData.append('book_author', author);
+
+            try {
+                const response = await fetch(`/api/reconvert/${reconvertTaskId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    let parsed;
+                    try { parsed = JSON.parse(text); } catch { parsed = null; }
+                    const msg = parsed && parsed.detail ? parsed.detail : text || 'Conversion failed';
+                    statusDiv.innerHTML = `<span style="color:#f44336">Error: ${msg}</span>`;
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Retry';
+                    return;
+                }
+
+                statusDiv.innerHTML = '<span style="color:#2196F3">Conversion in progress... monitoring status.</span>';
+
+                let polls = 0;
+                const maxPolls = 600;
+                const poll = setInterval(async () => {
+                    polls++;
+                    try {
+                        const r = await fetch(`/api/tasks/${reconvertTaskId}`);
+                        if (!r.ok) return;
+                        const d = await r.json();
+
+                        if (d.status === 'running') {
+                            statusDiv.innerHTML = `<span style="color:#2196F3">${d.progress}</span>`;
+                        } else if (d.status === 'completed') {
+                            clearInterval(poll);
+                            statusDiv.innerHTML = `<span style="color:#4CAF50">Done! Converted to ${d.output_format}.</span>`;
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Done';
+                            loadTasks();
+                        } else if (d.status === 'failed') {
+                            clearInterval(poll);
+                            const err = d.error || { message: d.progress || 'Unknown error' };
+                            statusDiv.innerHTML = `<span style="color:#f44336">Failed: ${err.message}</span>`;
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Retry';
+                        }
+
+                        if (polls > maxPolls) {
+                            clearInterval(poll);
+                            statusDiv.innerHTML = '<span style="color:#ff9800">Poll timeout - check File Manager for status.</span>';
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Close';
+                            loadTasks();
+                        }
+                    } catch (e) {
+                        clearInterval(poll);
+                        statusDiv.innerHTML = `<span style="color:#f44336">Poll error: ${e.message}</span>`;
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Close';
+                    }
+                }, 2000);
+
+            } catch (error) {
+                statusDiv.innerHTML = `<span style="color:#f44336">Network error: ${error.message}</span>`;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Retry';
+            }
         }
     </script>
 </body>
