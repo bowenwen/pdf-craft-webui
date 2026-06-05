@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Craft - PDF to EPUB/Markdown Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #4CAF50;
+            background-color: #f8fff8;
+        }
+
+        .upload-area.has-file {
+            border-color: #4CAF50;
+            background-color: #e8f5e9;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .upload-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
+
+        .file-info {
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .advanced-toggle {
+            color: #4CAF50;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .advanced-section {
+            display: none;
+        }
+
+        .advanced-section.visible {
+            display: block;
+        }
+
+        .convert-btn {
+            background-color: #2196F3;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .convert-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .convert-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status-area {
+            display: none;
+        }
+
+        .status-area.visible {
+            display: block;
+        }
+
+        .status-bar {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .status-message {
+            font-weight: 500;
+        }
+
+        .download-area {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .download-area.visible {
+            display: block;
+        }
+
+        .download-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Craft</h1>
+        <p class="subtitle">Convert PDF files to EPUB or Markdown using DeepSeek OCR</p>
+
+        <div class="card">
+            <div class="upload-area" id="uploadArea">
+                <p>Drag and drop your PDF file here or click to browse</p>
+                <input type="file" id="fileInput" accept=".pdf">
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose PDF File</button>
+                <div class="file-info" id="fileInfo"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="outputFormat">Output Format</label>
+                <select id="outputFormat">
+                    <option value="epub" selected>EPUB</option>
+                    <option value="markdown">Markdown</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="bookTitle">Book Title</label>
+                <input type="text" id="bookTitle" placeholder="Untitled">
+            </div>
+
+            <div class="form-group">
+                <label for="bookAuthor">Author</label>
+                <input type="text" id="bookAuthor" placeholder="Author name">
+            </div>
+
+            <div class="form-group">
+                <label for="ocrSize">OCR Model</label>
+                <select id="ocrSize">
+                    <option value="gundam" selected>Gundam (Best quality)</option>
+                    <option value="large">Large</option>
+                    <option value="base">Base</option>
+                    <option value="small">Small</option>
+                    <option value="tiny">Tiny (Fastest)</option>
+                </select>
+            </div>
+
+            <p class="advanced-toggle" onclick="toggleAdvanced()">Show Advanced Options</p>
+            <div class="advanced-section" id="advancedSection">
+                <div class="form-group">
+                    <label for="language">Language</label>
+                    <select id="language">
+                        <option value="en" selected>English</option>
+                        <option value="zh">Chinese</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dpi">DPI</label>
+                    <input type="text" id="dpi" value="300">
+                </div>
+
+                <div class="form-group">
+                    <label>Options</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeCover" checked>
+                            <label for="includeCover">Include Cover</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeFootnotes" checked>
+                            <label for="includeFootnotes">Include Footnotes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tocAssumed" checked>
+                            <label for="tocAssumed">Assume TOC</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ignorePdfErrors">
+                            <label for="ignorePdfErrors">Ignore PDF Errors</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ignoreOcrErrors">
+                            <label for="ignoreOcrErrors">Ignore OCR Errors</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="convert-btn" id="convertBtn" onclick="startConversion()">Start Conversion</button>
+        </div>
+
+        <div class="card status-area" id="statusArea">
+            <div class="status-bar">
+                <h3>Conversion Status</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="status-message" id="statusMessage">Processing...</p>
+            </div>
+            <div class="download-area" id="downloadArea">
+                <a class="download-btn" id="downloadBtn" href="#">Download Result</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        let currentTaskId = null;
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.pdf')) {
+                handleFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            selectedFile = file;
+            fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            uploadArea.classList.add('has-file');
+        }
+
+        function toggleAdvanced() {
+            const section = document.getElementById('advancedSection');
+            const toggle = document.querySelector('.advanced-toggle');
+            if (section.classList.contains('visible')) {
+                section.classList.remove('visible');
+                toggle.textContent = 'Show Advanced Options';
+            } else {
+                section.classList.add('visible');
+                toggle.textContent = 'Hide Advanced Options';
+            }
+        }
+
+        async function startConversion() {
+            if (!selectedFile) {
+                alert('Please select a PDF file');
+                return;
+            }
+
+            const convertBtn = document.getElementById('convertBtn');
+            const statusArea = document.getElementById('statusArea');
+            const statusMessage = document.getElementById('statusMessage');
+            const progressFill = document.getElementById('progressFill');
+            const downloadArea = document.getElementById('downloadArea');
+
+            convertBtn.disabled = true;
+            convertBtn.textContent = 'Converting...';
+            statusArea.classList.add('visible');
+            statusMessage.textContent = 'Uploading PDF...';
+            progressFill.style.width = '10%';
+            downloadArea.classList.remove('visible');
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('output_format', document.getElementById('outputFormat').value);
+            formData.append('ocr_size', document.getElementById('ocrSize').value);
+            formData.append('dpi', document.getElementById('dpi').value);
+            formData.append('include_cover', document.getElementById('includeCover').checked);
+            formData.append('include_footnotes', document.getElementById('includeFootnotes').checked);
+            formData.append('toc_assumed', document.getElementById('tocAssumed').checked);
+            formData.append('ignore_pdf_errors', document.getElementById('ignorePdfErrors').checked);
+            formData.append('ignore_ocr_errors', document.getElementById('ignoreOcrErrors').checked);
+            formData.append('language', document.getElementById('language').value);
+
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            if (title) formData.append('book_title', title);
+            if (author) formData.append('book_author', author);
+
+            try {
+                const response = await fetch('/api/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Conversion failed');
+                }
+
+                currentTaskId = data.task_id;
+                statusMessage.textContent = 'Conversion started!';
+                progressFill.style.width = '20%';
+
+                // Poll for status
+                pollStatus();
+
+            } catch (error) {
+                statusMessage.textContent = 'Error: ' + error.message;
+                progressFill.style.width = '0%';
+                progressFill.style.backgroundColor = '#f44336';
+                convertBtn.disabled = false;
+                convertBtn.textContent = 'Start Conversion';
+            }
+        }
+
+        async function pollStatus() {
+            const statusMessage = document.getElementById('statusMessage');
+            const progressFill = document.getElementById('progressFill');
+            const downloadArea = document.getElementById('downloadArea');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const convertBtn = document.getElementById('convertBtn');
+
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/task/${currentTaskId}`);
+                    const data = await response.json();
+
+                    statusMessage.textContent = data.progress;
+                    
+                    if (data.status === 'running') {
+                        progressFill.style.width = '50%';
+                        progressFill.style.backgroundColor = '#2196F3';
+                    } else if (data.status === 'completed') {
+                        clearInterval(interval);
+                        progressFill.style.width = '100%';
+                        progressFill.style.backgroundColor = '#4CAF50';
+                        statusMessage.textContent = 'Conversion completed!';
+                        downloadArea.classList.add('visible');
+                        downloadBtn.href = `/api/download/${currentTaskId}`;
+                        convertBtn.disabled = false;
+                        convertBtn.textContent = 'Convert Another';
+                    } else if (data.status === 'failed') {
+                        clearInterval(interval);
+                        progressFill.style.width = '0%';
+                        progressFill.style.backgroundColor = '#f44336';
+                        statusMessage.textContent = 'Conversion failed: ' + data.progress;
+                        convertBtn.disabled = false;
+                        convertBtn.textContent = 'Try Again';
+                    }
+
+                } catch (error) {
+                    statusMessage.textContent = 'Error checking status';
+                    convertBtn.disabled = false;
+                    convertBtn.textContent = 'Try Again';
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

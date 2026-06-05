@@ -1,0 +1,14 @@
+[project]
+name = "pdf-craft-webui"
+version = "0.1.0"
+description = "Web UI for pdf-craft PDF-to-Markdown/EPUB conversion"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pdf-craft>=1.0.0",
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.20.0",
+    "python-multipart>=0.0.9",
+]

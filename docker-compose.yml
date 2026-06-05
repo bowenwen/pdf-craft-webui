@@ -1,0 +1,21 @@
+services:
+  pdf-craft:
+    build: .
+    ports:
+      - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+      - ./outputs:/app/outputs
+      - ./server.py:/app/server.py
+      - ./static:/app/static
+    restart: unless-stopped
+
+volumes:
+  hf-cache:
