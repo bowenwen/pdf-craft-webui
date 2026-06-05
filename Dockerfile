@@ -15,9 +15,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install uv
 
-RUN uv pip install --system \
+RUN uv pip install \
     torch torchvision --index-url https://download.pytorch.org/whl/cu126 && \
-    uv pip install --system \
+    uv pip install \
     pdf-craft \
     fastapi \
     uvicorn[standard] \
