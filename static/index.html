@@ -224,6 +224,35 @@
             border-radius: 5px;
             margin-top: 10px;
         }
+
+        .error-details {
+            display: none;
+            background-color: #1e1e1e;
+            color: #e5c07b;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .error-details.visible {
+            display: block;
+        }
+
+        .toggle-details {
+            background: none;
+            border: none;
+            color: #90040f;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 13px;
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
@@ -320,6 +349,8 @@
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
                 <p class="status-message" id="statusMessage">Processing...</p>
+                <div class="error-details" id="errorDetails"></div>
+                <button class="toggle-details" id="toggleDetails" style="display:none" onclick="toggleErrorDetails()">Show technical details</button>
             </div>
             <div class="download-area" id="downloadArea">
                 <a class="download-btn" id="downloadBtn" href="#">Download Result</a>
@@ -378,6 +409,43 @@
             }
         }
 
+        function toggleErrorDetails() {
+            const details = document.getElementById('errorDetails');
+            const btn = document.getElementById('toggleDetails');
+            if (details.classList.contains('visible')) {
+                details.classList.remove('visible');
+                btn.textContent = 'Show technical details';
+            } else {
+                details.classList.add('visible');
+                btn.textContent = 'Hide technical details';
+            }
+        }
+
+        function showError(message, errorObj) {
+            const statusMessage = document.getElementById('statusMessage');
+            const errorDetails = document.getElementById('errorDetails');
+            const toggleBtn = document.getElementById('toggleDetails');
+            const progressFill = document.getElementById('progressFill');
+
+            progressFill.style.width = '0%';
+            progressFill.style.backgroundColor = '#f44336';
+
+            if (errorObj && errorObj.traceback) {
+                statusMessage.textContent = `[${errorObj.type}] ${errorObj.message}`;
+                statusMessage.style.color = '#c62828';
+                errorDetails.textContent = errorObj.traceback;
+                errorDetails.classList.add('visible');
+                toggleBtn.style.display = 'inline';
+                toggleBtn.textContent = 'Hide technical details';
+            } else {
+                statusMessage.textContent = message;
+                statusMessage.style.color = '#c62828';
+                errorDetails.textContent = '';
+                errorDetails.classList.remove('visible');
+                toggleBtn.style.display = 'none';
+            }
+        }
+
         async function startConversion() {
             if (!selectedFile) {
                 alert('Please select a PDF file');
@@ -420,22 +488,39 @@
                     body: formData
                 });
 
-                const data = await response.json();
                 if (!response.ok) {
-                    throw new Error(data.detail || 'Conversion failed');
+                    const text = await response.text();
+                    let parsed;
+                    try {
+                        parsed = JSON.parse(text);
+                    } catch {
+                        parsed = null;
+                    }
+
+                    const errorObj = parsed && parsed.detail ? {
+                        message: typeof parsed.detail === 'string' ? parsed.detail : JSON.stringify(parsed.detail),
+                        type: parsed.type || 'ServerError',
+                        traceback: parsed.traceback || '',
+                    } : {
+                        message: text || `Server error (${response.status})`,
+                        traceback: text || '',
+                    };
+
+                    showError(errorObj.message, errorObj);
+                    throw new Error(errorObj.message);
                 }
 
+                const data = await response.json();
                 currentTaskId = data.task_id;
                 statusMessage.textContent = 'Conversion started!';
+                statusMessage.style.color = '';
                 progressFill.style.width = '20%';
 
                 // Poll for status
                 pollStatus();
 
             } catch (error) {
-                statusMessage.textContent = 'Error: ' + error.message;
-                progressFill.style.width = '0%';
-                progressFill.style.backgroundColor = '#f44336';
+                const convertBtn = document.getElementById('convertBtn');
                 convertBtn.disabled = false;
                 convertBtn.textContent = 'Start Conversion';
             }
@@ -451,11 +536,35 @@
             const interval = setInterval(async () => {
                 try {
                     const response = await fetch(`/api/task/${currentTaskId}`);
+                    if (!response.ok) {
+                        const text = await response.text();
+                        let parsed;
+                        try {
+                            parsed = JSON.parse(text);
+                        } catch {
+                            parsed = null;
+                        }
+
+                        const errorObj = parsed && parsed.detail ? {
+                            message: typeof parsed.detail === 'string' ? parsed.detail : JSON.stringify(parsed.detail),
+                            type: parsed.type || 'ServerError',
+                            traceback: parsed.traceback || '',
+                        } : {
+                            message: text || `Server error (${response.status})`,
+                            traceback: text || '',
+                        };
+
+                        clearInterval(interval);
+                        showError(errorObj.message, errorObj);
+                        convertBtn.disabled = false;
+                        convertBtn.textContent = 'Try Again';
+                        return;
+                    }
                     const data = await response.json();
 
-                    statusMessage.textContent = data.progress;
-                    
                     if (data.status === 'running') {
+                        statusMessage.textContent = data.progress;
+                        statusMessage.style.color = '';
                         progressFill.style.width = '50%';
                         progressFill.style.backgroundColor = '#2196F3';
                     } else if (data.status === 'completed') {
@@ -463,21 +572,31 @@
                         progressFill.style.width = '100%';
                         progressFill.style.backgroundColor = '#4CAF50';
                         statusMessage.textContent = 'Conversion completed!';
+                        statusMessage.style.color = '';
                         downloadArea.classList.add('visible');
                         downloadBtn.href = `/api/download/${currentTaskId}`;
                         convertBtn.disabled = false;
                         convertBtn.textContent = 'Convert Another';
                     } else if (data.status === 'failed') {
                         clearInterval(interval);
-                        progressFill.style.width = '0%';
-                        progressFill.style.backgroundColor = '#f44336';
-                        statusMessage.textContent = 'Conversion failed: ' + data.progress;
+                        const errorObj = data.error || {
+                            message: data.progress || 'Unknown error',
+                            type: 'Error',
+                            traceback: '',
+                        };
+                        showError(errorObj.message, errorObj);
                         convertBtn.disabled = false;
                         convertBtn.textContent = 'Try Again';
+                    } else if (data.status === 'pending') {
+                        statusMessage.textContent = data.progress;
+                        statusMessage.style.color = '';
+                        progressFill.style.width = '10%';
+                        progressFill.style.backgroundColor = '#4CAF50';
                     }
 
                 } catch (error) {
-                    statusMessage.textContent = 'Error checking status';
+                    clearInterval(interval);
+                    showError('Could not reach server: ' + error.message, null);
                     convertBtn.disabled = false;
                     convertBtn.textContent = 'Try Again';
                 }

@@ -1,11 +1,13 @@
 
 import os
+import sys
+import traceback
 import uuid
 from pathlib import Path
 from typing import Optional
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks, Request
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,6 +50,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Global exception handler for detailed error responses
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    tb = traceback.format_exc()
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": str(exc),
+            "type": type(exc).__name__,
+            "traceback": tb,
+        },
+    )
 
 # Serve static files
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -113,8 +128,11 @@ def run_conversion(task_id: str, pdf_path: str, output_format: str, options: dic
         task["output_path"] = str(output_path)
         task["output_filename"] = output_path.name
     except Exception as e:
+        tb = traceback.format_exc()
         task["status"] = "failed"
-        task["progress"] = f"Error: {str(e)}"
+        task["progress"] = str(e)
+        task["error_traceback"] = tb
+        task["error_type"] = type(e).__name__
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -187,6 +205,12 @@ async def get_task(task_id: str):
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     result = {k: v for k, v in task.items() if k != "pdf_path"}
+    if result.get("status") == "failed":
+        result["error"] = {
+            "message": result.get("progress", "Unknown error"),
+            "type": result.get("error_type", "Error"),
+            "traceback": result.get("error_traceback", ""),
+        }
     return result
 
 
