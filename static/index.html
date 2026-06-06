@@ -3,545 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Craft - PDF to EPUB/Markdown Converter</title>
+    <title>PDF Craft</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
+            background-color: #f5f5f5; color: #333; line-height: 1.6;
         }
-
-        .container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 2em;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 0;
-            border-bottom: 2px solid #e0e0e0;
-            margin-bottom: 20px;
-        }
-
+        .container { max-width: 1100px; margin: 40px auto; padding: 20px; }
+        h1 { color: #2c3e50; margin-bottom: 8px; font-size: 2em; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px; }
         .tab {
-            padding: 12px 24px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            color: #666;
-            border: none;
-            background: none;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-            margin-bottom: -2px;
+            padding: 12px 24px; cursor: pointer; font-size: 16px; font-weight: 500;
+            color: #666; border: none; background: none; border-bottom: 3px solid transparent;
+            transition: all 0.2s; margin-bottom: -2px;
         }
-
-        .tab:hover {
-            color: #333;
-        }
-
-        .tab.active {
-            color: #2196F3;
-            border-bottom-color: #2196F3;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
+        .tab:hover { color: #333; }
+        .tab.active { color: #2196F3; border-bottom-color: #2196F3; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            margin-bottom: 20px;
+            background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px; margin-bottom: 20px;
         }
-
         .upload-area {
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
+            border: 2px dashed #ccc; border-radius: 8px; padding: 40px; text-align: center;
+            margin-bottom: 20px; transition: all 0.3s ease;
         }
-
-        .upload-area:hover, .upload-area.dragover {
-            border-color: #4CAF50;
-            background-color: #f8fff8;
-        }
-
-        .upload-area.has-file {
-            border-color: #4CAF50;
-            background-color: #e8f5e9;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
+        .upload-area:hover, .upload-area.dragover { border-color: #4CAF50; background-color: #f8fff8; }
+        .upload-area.has-file { border-color: #4CAF50; background-color: #e8f5e9; }
+        #fileInput { display: none; }
         .upload-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
+            background-color: #4CAF50; color: white; padding: 12px 30px; border: none;
+            border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s;
+        }
+        .upload-btn:hover { background-color: #45a049; }
+        .file-info { margin-top: 15px; font-weight: 500; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; }
+        input[type="text"], input[type="number"], select {
+            width: 100%; padding: 10px 12px; border: 1px solid #ddd;
+            border-radius: 4px; font-size: 14px;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .checkbox-item { display: flex; align-items: center; }
+        .checkbox-item input[type="checkbox"] { margin-right: 8px; }
+        .advanced-toggle { color: #4CAF50; cursor: pointer; margin-bottom: 15px; font-weight: 500; }
+        .advanced-section { display: none; }
+        .advanced-section.visible { display: block; }
+        .submit-btn {
+            background-color: #2196F3; color: white; padding: 15px 40px; border: none;
+            border-radius: 5px; cursor: pointer; font-size: 18px; width: 100%;
             transition: background-color 0.3s;
         }
-
-        .upload-btn:hover {
-            background-color: #45a049;
-        }
-
-        .file-info {
-            margin-top: 15px;
-            font-weight: 500;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        input[type="text"], select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            margin-right: 8px;
-        }
-
-        .advanced-toggle {
-            color: #4CAF50;
-            cursor: pointer;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .advanced-section {
-            display: none;
-        }
-
-        .advanced-section.visible {
-            display: block;
-        }
-
-        .convert-btn {
-            background-color: #2196F3;
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 100%;
-            transition: background-color 0.3s;
-        }
-
-        .convert-btn:hover {
-            background-color: #1976D2;
-        }
-
-        .convert-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .status-area {
-            display: none;
-        }
-
-        .status-area.visible {
-            display: block;
-        }
-
-        .status-bar {
-            background-color: #f0f0f0;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-
+        .submit-btn:hover { background-color: #1976D2; }
+        .submit-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .submit-result { display: none; }
+        .submit-result.visible { display: block; }
+        .result-bar { background-color: #f0f0f0; padding: 20px; border-radius: 5px; margin-top: 15px; }
         .progress-bar {
-            width: 100%;
-            height: 20px;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
+            width: 100%; height: 20px; background-color: #e0e0e0;
+            border-radius: 10px; overflow: hidden; margin: 10px 0;
         }
-
-        .progress-fill {
-            height: 100%;
-            background-color: #4CAF50;
-            transition: width 0.3s ease;
-            border-radius: 10px;
-        }
-
-        .status-message {
-            font-weight: 500;
-        }
-
-        .download-area {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .download-area.visible {
-            display: block;
-        }
-
-        .download-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .download-btn:hover {
-            background-color: #45a049;
-        }
-
-        .error-message {
-            background-color: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
+        .progress-fill { height: 100%; background-color: #4CAF50; transition: width 0.3s ease; border-radius: 10px; }
+        .result-message { font-weight: 500; }
         .error-details {
-            display: none;
-            background-color: #1e1e1e;
-            color: #e5c07b;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 12px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 400px;
-            overflow-y: auto;
+            display: none; background-color: #1e1e1e; color: #e5c07b; padding: 15px;
+            border-radius: 5px; margin-top: 10px; font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px; white-space: pre-wrap; word-break: break-all;
+            max-height: 400px; overflow-y: auto;
         }
-
-        .error-details.visible {
-            display: block;
-        }
-
+        .error-details.visible { display: block; }
         .toggle-details {
-            background: none;
-            border: none;
-            color: #90040f;
-            cursor: pointer;
-            text-decoration: underline;
-            font-size: 13px;
-            margin-top: 8px;
+            background: none; border: none; color: #90040f; cursor: pointer;
+            text-decoration: underline; font-size: 13px; margin-top: 8px;
         }
 
-        /* File Manager */
-        .file-manager-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        /* Task Manager */
+        .tm-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .tm-header h2 { font-size: 1.3em; color: #2c3e50; }
+        .tm-stats { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .tm-stat {
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
         }
-
-        .file-manager-header h2 {
-            font-size: 1.3em;
-            color: #2c3e50;
-        }
-
+        .tm-stat.running { background: #e3f2fd; color: #1565c0; }
+        .tm-stat.queued { background: #fff3e0; color: #e65100; }
+        .tm-stat.completed { background: #e8f5e9; color: #2e7d32; }
+        .tm-stat.failed { background: #ffebee; color: #c62828; }
+        .tm-stat.cancelled { background: #f3e5f5; color: #7b1fa2; }
         .refresh-btn {
-            background-color: #78909C;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
+            background-color: #78909C; color: white; padding: 8px 16px; border: none;
+            border-radius: 4px; cursor: pointer; font-size: 14px;
         }
-
-        .refresh-btn:hover {
-            background-color: #546E7A;
+        .refresh-btn:hover { background-color: #546E7A; }
+        .tm-table { width: 100%; border-collapse: collapse; }
+        .tm-table th {
+            text-align: left; padding: 10px 8px; background-color: #f5f5f5;
+            border-bottom: 2px solid #ddd; font-size: 12px; color: #555; font-weight: 600;
         }
-
-        .task-table {
-            width: 100%;
-            border-collapse: collapse;
+        .tm-table td {
+            padding: 10px 8px; border-bottom: 1px solid #eee;
+            font-size: 13px; vertical-align: middle;
         }
-
-        .task-table th {
-            text-align: left;
-            padding: 12px 10px;
-            background-color: #f5f5f5;
-            border-bottom: 2px solid #ddd;
-            font-size: 13px;
-            color: #555;
-            font-weight: 600;
-        }
-
-        .task-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-            vertical-align: middle;
-        }
-
-        .task-table tr:hover {
-            background-color: #f9f9f9;
-        }
-
+        .tm-table tr:hover { background-color: #f9f9f9; }
         .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
+            display: inline-block; padding: 3px 10px; border-radius: 12px;
+            font-size: 12px; font-weight: 600;
         }
-
-        .status-badge.pending {
-            background-color: #fff3e0;
-            color: #e65100;
-        }
-
-        .status-badge.running {
-            background-color: #e3f2fd;
-            color: #1565c0;
-        }
-
-        .status-badge.completed {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-badge.failed {
-            background-color: #ffebee;
-            color: #c62828;
-        }
-
+        .status-badge.queued { background-color: #fff3e0; color: #e65100; }
+        .status-badge.running { background-color: #e3f2fd; color: #1565c0; }
+        .status-badge.completed { background-color: #e8f5e9; color: #2e7d32; }
+        .status-badge.failed { background-color: #ffebee; color: #c62828; }
+        .status-badge.cancelled { background-color: #f3e5f5; color: #7b1fa2; }
         .format-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            background-color: #e0e0e0;
-            color: #333;
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            font-size: 12px; font-weight: 500; background-color: #e0e0e0; color: #333;
         }
-
-        .format-badge.epub {
-            background-color: #e8eaf6;
-            color: #283593;
-        }
-
-        .format-badge.markdown {
-            background-color: #f3e5f5;
-            color: #7b1fa2;
-        }
-
+        .format-badge.epub { background-color: #e8eaf6; color: #283593; }
+        .format-badge.markdown { background-color: #f3e5f5; color: #7b1fa2; }
         .action-btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 2px;
-            transition: background-color 0.2s;
+            padding: 4px 8px; border: none; border-radius: 3px; cursor: pointer;
+            font-size: 11px; margin: 1px; transition: background-color 0.2s;
         }
+        .action-btn.start { background-color: #4CAF50; color: white; }
+        .action-btn.start:hover { background-color: #388E3C; }
+        .action-btn.stop { background-color: #FF9800; color: white; }
+        .action-btn.stop:hover { background-color: #F57C00; }
+        .action-btn.download { background-color: #2196F3; color: white; }
+        .action-btn.download:hover { background-color: #1976D2; }
+        .action-btn.delete { background-color: #f44336; color: white; }
+        .action-btn.delete:hover { background-color: #d32f2f; }
+        .action-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .tm-progress-inline {
+            width: 100px; height: 6px; background-color: #e0e0e0;
+            border-radius: 3px; overflow: hidden; display: inline-block;
+            vertical-align: middle; margin-right: 6px;
+        }
+        .tm-progress-fill { height: 100%; border-radius: 3px; }
+        .tm-progress-label { font-size: 11px; color: #777; vertical-align: middle; }
+        .tm-file-name { font-weight: 500; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .tm-date { color: #777; font-size: 11px; white-space: nowrap; }
+        .no-tasks { text-align: center; padding: 40px; color: #999; }
 
-        .action-btn.download {
-            background-color: #4CAF50;
-            color: white;
+        /* Settings */
+        .settings-section { margin-bottom: 25px; }
+        .settings-section h3 { font-size: 1em; color: #2c3e50; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+        .settings-row { display: flex; align-items: center; margin-bottom: 12px; gap: 12px; }
+        .settings-row label { min-width: 160px; margin-bottom: 0; }
+        .settings-row input, .settings-row select { flex: 1; max-width: 300px; }
+        .settings-row .checkbox-item { margin: 0; }
+        .settings-row .checkbox-item input { margin-right: 8px; }
+        .settings-row .checkbox-item label { min-width: auto; margin-bottom: 0; }
+        .save-settings-btn {
+            background-color: #4CAF50; color: white; padding: 10px 30px; border: none;
+            border-radius: 5px; cursor: pointer; font-size: 14px;
         }
-
-        .action-btn.download:hover {
-            background-color: #388E3C;
-        }
-
-        .action-btn.reconvert {
-            background-color: #FF9800;
-            color: white;
-        }
-
-        .action-btn.reconvert:hover {
-            background-color: #F57C00;
-        }
-
-        .action-btn.delete {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .action-btn.delete:hover {
-            background-color: #d32f2f;
-        }
-
-        .action-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .no-tasks {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
+        .save-settings-btn:hover { background-color: #388E3C; }
+        .save-settings-result { margin-top: 10px; font-size: 13px; }
+        .save-settings-result.success { color: #2e7d32; }
+        .save-settings-result.error { color: #c62828; }
 
         /* Modal */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
         }
-
-        .modal-overlay.visible {
-            display: flex;
-        }
-
+        .modal-overlay.visible { display: flex; }
         .modal {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            width: 90%;
-            max-width: 550px;
-            max-height: 80vh;
-            overflow-y: auto;
+            background: white; border-radius: 8px; padding: 30px; width: 90%;
+            max-width: 550px; max-height: 80vh; overflow-y: auto;
         }
-
-        .modal h3 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: flex-end;
-        }
-
-        .modal-btn {
-            padding: 10px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .modal-btn.primary {
-            background-color: #2196F3;
-            color: white;
-        }
-
-        .modal-btn.primary:hover {
-            background-color: #1976D2;
-        }
-
-        .modal-btn.secondary {
-            background-color: #e0e0e0;
-            color: #333;
-        }
-
-        .modal-btn.secondary:hover {
-            background-color: #ccc;
-        }
-
-        .file-name {
-            font-weight: 500;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .date-cell {
-            color: #777;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-
-        .progress-inline {
-            width: 80px;
-            height: 8px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        .progress-inline-fill {
-            height: 100%;
-            border-radius: 4px;
-        }
+        .modal h3 { margin-bottom: 20px; color: #2c3e50; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+        .modal-btn { padding: 10px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .modal-btn.primary { background-color: #2196F3; color: white; }
+        .modal-btn.primary:hover { background-color: #1976D2; }
+        .modal-btn.secondary { background-color: #e0e0e0; color: #333; }
+        .modal-btn.secondary:hover { background-color: #ccc; }
     </style>
 </head>
 <body>
@@ -550,11 +190,12 @@
         <p class="subtitle">Convert PDF files to EPUB or Markdown using DeepSeek OCR</p>
 
         <div class="tabs">
-            <button class="tab active" data-tab="upload" onclick="switchTab('upload')">Upload &amp; Convert</button>
-            <button class="tab" data-tab="files" onclick="switchTab('files')">File Manager</button>
+            <button class="tab active" data-tab="upload" onclick="switchTab('upload')">New Task</button>
+            <button class="tab" data-tab="tasks" onclick="switchTab('tasks')">Task Manager</button>
+            <button class="tab" data-tab="settings" onclick="switchTab('settings')">Settings</button>
         </div>
 
-        <!-- Upload Tab -->
+        <!-- New Task Tab -->
         <div class="tab-content active" id="tab-upload">
             <div class="card">
                 <div class="upload-area" id="uploadArea">
@@ -568,19 +209,13 @@
                     <div class="form-group">
                         <label for="outputFormat">Output Format</label>
                         <select id="outputFormat">
-                            <option value="epub">EPUB</option>
-                            <option value="markdown" selected>Markdown</option>
+                            <option value="epub" selected>EPUB</option>
+                            <option value="markdown">Markdown</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="ocrSize">OCR Model</label>
-                        <select id="ocrSize">
-                            <option value="gundam" selected>Gundam (Best quality)</option>
-                            <option value="large">Large</option>
-                            <option value="base">Base</option>
-                            <option value="small">Small</option>
-                            <option value="tiny">Tiny (Fastest)</option>
-                        </select>
+                        <select id="ocrSize"></select>
                     </div>
                 </div>
 
@@ -600,29 +235,26 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="language">Language</label>
-                            <select id="language">
-                                <option value="en" selected>English</option>
-                                <option value="zh">Chinese</option>
-                            </select>
+                            <select id="language"></select>
                         </div>
                         <div class="form-group">
                             <label for="dpi">DPI</label>
-                            <input type="text" id="dpi" value="300">
+                            <input type="number" id="dpi" value="300" min="1" max="2000">
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Options</label>
                         <div class="checkbox-group">
                             <div class="checkbox-item">
-                                <input type="checkbox" id="includeCover" checked>
+                                <input type="checkbox" id="includeCover">
                                 <label for="includeCover">Include Cover</label>
                             </div>
                             <div class="checkbox-item">
-                                <input type="checkbox" id="includeFootnotes" checked>
+                                <input type="checkbox" id="includeFootnotes">
                                 <label for="includeFootnotes">Include Footnotes</label>
                             </div>
                             <div class="checkbox-item">
-                                <input type="checkbox" id="tocAssumed" checked>
+                                <input type="checkbox" id="tocAssumed">
                                 <label for="tocAssumed">Assume TOC</label>
                             </div>
                             <div class="checkbox-item">
@@ -637,97 +269,215 @@
                     </div>
                 </div>
 
-                <button class="convert-btn" id="convertBtn" onclick="startConversion()">Start Conversion</button>
+                <button class="submit-btn" id="submitBtn" onclick="submitTask()">Add to Queue</button>
             </div>
 
-            <div class="card status-area" id="statusArea">
-                <div class="status-bar">
-                    <h3>Conversion Status</h3>
+            <div class="card submit-result" id="submitResult">
+                <div class="result-bar">
+                    <h3>Task Status</h3>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
-                    <p class="status-message" id="statusMessage">Processing...</p>
+                    <p class="result-message" id="resultMessage"></p>
                     <div class="error-details" id="errorDetails"></div>
                     <button class="toggle-details" id="toggleDetails" style="display:none" onclick="toggleErrorDetails()">Show technical details</button>
-                </div>
-                <div class="download-area" id="downloadArea">
-                    <a class="download-btn" id="downloadBtn" href="#">Download Result</a>
                 </div>
             </div>
         </div>
 
-        <!-- File Manager Tab -->
-        <div class="tab-content" id="tab-files">
+        <!-- Task Manager Tab -->
+        <div class="tab-content" id="tab-tasks">
             <div class="card">
-                <div class="file-manager-header">
-                    <h2>File Manager</h2>
+                <div class="tm-header">
+                    <h2>Task Manager</h2>
                     <button class="refresh-btn" onclick="loadTasks()">Refresh</button>
                 </div>
+                <div class="tm-stats" id="tmStats"></div>
                 <div id="tasksContainer">
-                    <div class="no-tasks">No files uploaded yet.</div>
+                    <div class="no-tasks">No tasks yet.</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-content" id="tab-settings">
+            <div class="card">
+                <h2 style="margin-bottom:20px;color:#2c3e50">Settings</h2>
+
+                <div class="settings-section">
+                    <h3>Concurrent Processing</h3>
+                    <div class="settings-row">
+                        <label for="setMaxConcurrent">Max Concurrent Tasks</label>
+                        <input type="number" id="setMaxConcurrent" value="2" min="1" max="10">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Default Conversion Settings</h3>
+                    <div class="settings-row">
+                        <label for="setDefaultFormat">Default Output Format</label>
+                        <select id="setDefaultFormat">
+                            <option value="epub">EPUB</option>
+                            <option value="markdown">Markdown</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <label for="setDefaultOcrSize">Default OCR Model</label>
+                        <select id="setDefaultOcrSize">
+                            <option value="gundam">Gundam (Best quality)</option>
+                            <option value="large">Large</option>
+                            <option value="base">Base</option>
+                            <option value="small">Small</option>
+                            <option value="tiny">Tiny (Fastest)</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <label for="setDefaultDpi">Default DPI</label>
+                        <input type="number" id="setDefaultDpi" value="300" min="1" max="2000">
+                    </div>
+                    <div class="settings-row">
+                        <label for="setDefaultLanguage">Default Language</label>
+                        <select id="setDefaultLanguage">
+                            <option value="en">English</option>
+                            <option value="zh">Chinese</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <label>Default Options</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="setDefaultIncludeCover">
+                                <label for="setDefaultIncludeCover">Include Cover</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="setDefaultIncludeFootnotes">
+                                <label for="setDefaultIncludeFootnotes">Include Footnotes</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="setDefaultTocAssumed">
+                                <label for="setDefaultTocAssumed">Assume TOC</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="setDefaultIgnorePdfErrors">
+                                <label for="setDefaultIgnorePdfErrors">Ignore PDF Errors</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="setDefaultIgnoreOcrErrors">
+                                <label for="setDefaultIgnoreOcrErrors">Ignore OCR Errors</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="save-settings-btn" onclick="saveSettings()">Save Settings</button>
+                <div class="save-settings-result" id="settingsResult"></div>
             </div>
         </div>
     </div>
 
-    <!-- Reconvert Modal -->
-    <div class="modal-overlay" id="reconvertModal">
+    <!-- Convert Modal -->
+    <div class="modal-overlay" id="convertModal">
         <div class="modal">
-            <h3>Reconvert to Different Format</h3>
-            <p id="reconvertFileInfo" style="margin-bottom:15px;color:#666;"></p>
-
-            <div class="form-group">
-                <label for="reconvertFormat">Target Format</label>
-                <select id="reconvertFormat">
-                    <option value="epub">EPUB</option>
-                    <option value="markdown">Markdown</option>
-                </select>
-            </div>
-
+            <h3>Convert to <span id="convertTargetLabel"></span></h3>
+            <p id="convertFileInfo" style="margin-bottom:15px;color:#666;"></p>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="reconvertTitle">Book Title</label>
-                    <input type="text" id="reconvertTitle" placeholder="Untitled">
+                    <label for="convertTitle">Book Title</label>
+                    <input type="text" id="convertTitle" placeholder="Untitled">
                 </div>
                 <div class="form-group">
-                    <label for="reconvertAuthor">Author</label>
-                    <input type="text" id="reconvertAuthor" placeholder="Author name">
+                    <label for="convertAuthor">Author</label>
+                    <input type="text" id="convertAuthor" placeholder="Author name">
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="reconvertOcrSize">OCR Model</label>
-                <select id="reconvertOcrSize">
-                    <option value="gundam" selected>Gundam (Best quality)</option>
-                    <option value="large">Large</option>
-                    <option value="base">Base</option>
-                    <option value="small">Small</option>
-                    <option value="tiny">Tiny (Fastest)</option>
-                </select>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="convertOcrSize">OCR Model</label>
+                    <select id="convertOcrSize">
+                        <option value="gundam">Gundam (Best quality)</option>
+                        <option value="large">Large</option>
+                        <option value="base">Base</option>
+                        <option value="small">Small</option>
+                        <option value="tiny">Tiny (Fastest)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="convertLanguage">Language</label>
+                    <select id="convertLanguage">
+                        <option value="en">English</option>
+                        <option value="zh">Chinese</option>
+                    </select>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="reconvertLanguage">Language</label>
-                <select id="reconvertLanguage">
-                    <option value="en" selected>English</option>
-                    <option value="zh">Chinese</option>
-                </select>
-            </div>
-
-            <div id="reconvertStatus" style="margin-top:10px;"></div>
-
+            <div id="convertStatus" style="margin-top:10px;"></div>
             <div class="modal-actions">
-                <button class="modal-btn secondary" onclick="closeReconvertModal()">Cancel</button>
-                <button class="modal-btn primary" id="reconvertSubmit" onclick="submitReconvert()">Convert</button>
+                <button class="modal-btn secondary" onclick="closeConvertModal()">Cancel</button>
+                <button class="modal-btn primary" id="convertSubmit" onclick="submitConvert()">Convert</button>
             </div>
         </div>
     </div>
 
     <script>
         let selectedFile = null;
+        let currentFileHash = null;
         let currentTaskId = null;
         let pollingInterval = null;
-        let fileManagerInterval = null;
+        let tmInterval = null;
+        let appSettings = null;
+
+        // ---- Init ----
+        async function init() {
+            try {
+                const r = await fetch('/api/settings');
+                if (r.ok) {
+                    appSettings = await r.json();
+                    applySettings(appSettings);
+                }
+            } catch(e) { /* use defaults */ }
+        }
+
+        function applySettings(cfg) {
+            // Apply to New Task form
+            document.getElementById('outputFormat').value = cfg.default_output_format || 'epub';
+            const ocrSel = document.getElementById('ocrSize');
+            ocrSel.innerHTML = '';
+            ['gundam','large','base','small','tiny'].forEach(v => {
+                const o = document.createElement('option');
+                o.value = v;
+                o.textContent = {gundam:'Gundam (Best quality)',large:'Large',base:'Base',small:'Small',tiny:'Tiny (Fastest)'}[v] || v;
+                if (v === (cfg.default_ocr_size || 'gundam')) o.selected = true;
+                ocrSel.appendChild(o);
+            });
+            document.getElementById('dpi').value = cfg.default_dpi || 300;
+            const langSel = document.getElementById('language');
+            langSel.innerHTML = '';
+            ['en','zh'].forEach(v => {
+                const o = document.createElement('option');
+                o.value = v;
+                o.textContent = v === 'en' ? 'English' : 'Chinese';
+                if (v === (cfg.default_language || 'en')) o.selected = true;
+                langSel.appendChild(o);
+            });
+            document.getElementById('includeCover').checked = !!cfg.default_include_cover;
+            document.getElementById('includeFootnotes').checked = !!cfg.default_include_footnotes;
+            document.getElementById('tocAssumed').checked = !!cfg.default_toc_assumed;
+            document.getElementById('ignorePdfErrors').checked = !!cfg.default_ignore_pdf_errors;
+            document.getElementById('ignoreOcrErrors').checked = !!cfg.default_ignore_ocr_errors;
+
+            // Apply to Settings form
+            document.getElementById('setMaxConcurrent').value = cfg.max_concurrent_tasks || 2;
+            document.getElementById('setDefaultFormat').value = cfg.default_output_format || 'epub';
+            document.getElementById('setDefaultOcrSize').value = cfg.default_ocr_size || 'gundam';
+            document.getElementById('setDefaultDpi').value = cfg.default_dpi || 300;
+            document.getElementById('setDefaultLanguage').value = cfg.default_language || 'en';
+            document.getElementById('setDefaultIncludeCover').checked = !!cfg.default_include_cover;
+            document.getElementById('setDefaultIncludeFootnotes').checked = !!cfg.default_include_footnotes;
+            document.getElementById('setDefaultTocAssumed').checked = !!cfg.default_toc_assumed;
+            document.getElementById('setDefaultIgnorePdfErrors').checked = !!cfg.default_ignore_pdf_errors;
+            document.getElementById('setDefaultIgnoreOcrErrors').checked = !!cfg.default_ignore_ocr_errors;
+        }
+
+        init();
 
         // ---- Tab Switching ----
         function switchTab(name) {
@@ -735,38 +485,24 @@
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelector(`.tab[data-tab="${name}"]`).classList.add('active');
             document.getElementById(`tab-${name}`).classList.add('active');
-            if (name === 'files') loadTasks();
+            if (name === 'tasks') loadTasks();
+            if (name === 'settings') {
+                try { applySettings(appSettings || {}); } catch(e) {}
+            }
         }
 
         // ---- File Upload ----
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
-
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => { uploadArea.classList.remove('dragover'); });
         uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
+            e.preventDefault(); uploadArea.classList.remove('dragover');
             const file = e.dataTransfer.files[0];
-            if (file && file.name.endsWith('.pdf')) {
-                handleFile(file);
-            }
+            if (file && file.name.endsWith('.pdf')) handleFile(file);
         });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                handleFile(e.target.files[0]);
-            }
-        });
-
+        fileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
         function handleFile(file) {
             selectedFile = file;
             fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
@@ -774,429 +510,329 @@
         }
 
         function toggleAdvanced() {
-            const section = document.getElementById('advancedSection');
-            const toggle = document.querySelector('.advanced-toggle');
-            if (section.classList.contains('visible')) {
-                section.classList.remove('visible');
-                toggle.textContent = 'Show Advanced Options';
-            } else {
-                section.classList.add('visible');
-                toggle.textContent = 'Hide Advanced Options';
-            }
+            const s = document.getElementById('advancedSection');
+            const t = document.querySelector('.advanced-toggle');
+            if (s.classList.contains('visible')) { s.classList.remove('visible'); t.textContent = 'Show Advanced Options'; }
+            else { s.classList.add('visible'); t.textContent = 'Hide Advanced Options'; }
         }
 
-        // ---- Error Display ----
         function toggleErrorDetails() {
-            const details = document.getElementById('errorDetails');
-            const btn = document.getElementById('toggleDetails');
-            if (details.classList.contains('visible')) {
-                details.classList.remove('visible');
-                btn.textContent = 'Show technical details';
-            } else {
-                details.classList.add('visible');
-                btn.textContent = 'Hide technical details';
-            }
+            const d = document.getElementById('errorDetails');
+            const b = document.getElementById('toggleDetails');
+            if (d.classList.contains('visible')) { d.classList.remove('visible'); b.textContent = 'Show technical details'; }
+            else { d.classList.add('visible'); b.textContent = 'Hide technical details'; }
         }
 
         function showError(message, errorObj) {
-            const statusMessage = document.getElementById('statusMessage');
-            const errorDetails = document.getElementById('errorDetails');
-            const toggleBtn = document.getElementById('toggleDetails');
-            const progressFill = document.getElementById('progressFill');
-
-            progressFill.style.width = '0%';
-            progressFill.style.backgroundColor = '#f44336';
-
+            const sm = document.getElementById('resultMessage');
+            const ed = document.getElementById('errorDetails');
+            const tb = document.getElementById('toggleDetails');
+            const pf = document.getElementById('progressFill');
+            pf.style.width = '0%'; pf.style.backgroundColor = '#f44336';
             if (errorObj && errorObj.traceback) {
-                statusMessage.textContent = `[${errorObj.type}] ${errorObj.message}`;
-                statusMessage.style.color = '#c62828';
-                errorDetails.textContent = errorObj.traceback;
-                errorDetails.classList.add('visible');
-                toggleBtn.style.display = 'inline';
-                toggleBtn.textContent = 'Hide technical details';
+                sm.textContent = `[${errorObj.type}] ${errorObj.message}`; sm.style.color = '#c62828';
+                ed.textContent = errorObj.traceback; ed.classList.add('visible');
+                tb.style.display = 'inline'; tb.textContent = 'Hide technical details';
             } else {
-                statusMessage.textContent = message;
-                statusMessage.style.color = '#c62828';
-                errorDetails.textContent = '';
-                errorDetails.classList.remove('visible');
-                toggleBtn.style.display = 'none';
+                sm.textContent = message; sm.style.color = '#c62828';
+                ed.textContent = ''; ed.classList.remove('visible'); tb.style.display = 'none';
             }
         }
 
-        // ---- Conversion ----
-        async function startConversion() {
-            if (!selectedFile) {
-                alert('Please select a PDF file');
-                return;
-            }
+        // ---- Submit Task ----
+        async function submitTask() {
+            if (!selectedFile) { alert('Please select a PDF file'); return; }
 
-            const convertBtn = document.getElementById('convertBtn');
-            const statusArea = document.getElementById('statusArea');
-            const statusMessage = document.getElementById('statusMessage');
-            const progressFill = document.getElementById('progressFill');
-            const downloadArea = document.getElementById('downloadArea');
+            const btn = document.getElementById('submitBtn');
+            const result = document.getElementById('submitResult');
+            const msg = document.getElementById('resultMessage');
+            const pf = document.getElementById('progressFill');
 
-            convertBtn.disabled = true;
-            convertBtn.textContent = 'Converting...';
-            statusArea.classList.add('visible');
-            statusMessage.textContent = 'Uploading PDF...';
-            statusMessage.style.color = '';
-            progressFill.style.width = '10%';
-            progressFill.style.backgroundColor = '#4CAF50';
-            downloadArea.classList.remove('visible');
+            btn.disabled = true; btn.textContent = 'Adding...';
+            result.classList.add('visible');
+            msg.textContent = 'Uploading PDF...'; msg.style.color = '';
+            pf.style.width = '10%'; pf.style.backgroundColor = '#4CAF50';
 
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('output_format', document.getElementById('outputFormat').value);
-            formData.append('ocr_size', document.getElementById('ocrSize').value);
-            formData.append('dpi', document.getElementById('dpi').value);
-            formData.append('include_cover', document.getElementById('includeCover').checked);
-            formData.append('include_footnotes', document.getElementById('includeFootnotes').checked);
-            formData.append('toc_assumed', document.getElementById('tocAssumed').checked);
-            formData.append('ignore_pdf_errors', document.getElementById('ignorePdfErrors').checked);
-            formData.append('ignore_ocr_errors', document.getElementById('ignoreOcrErrors').checked);
-            formData.append('language', document.getElementById('language').value);
-
+            const fd = new FormData();
+            fd.append('file', selectedFile);
+            fd.append('output_format', document.getElementById('outputFormat').value);
+            fd.append('ocr_size', document.getElementById('ocrSize').value);
+            fd.append('dpi', document.getElementById('dpi').value);
+            fd.append('include_cover', document.getElementById('includeCover').checked);
+            fd.append('include_footnotes', document.getElementById('includeFootnotes').checked);
+            fd.append('toc_assumed', document.getElementById('tocAssumed').checked);
+            fd.append('ignore_pdf_errors', document.getElementById('ignorePdfErrors').checked);
+            fd.append('ignore_ocr_errors', document.getElementById('ignoreOcrErrors').checked);
+            fd.append('language', document.getElementById('language').value);
             const title = document.getElementById('bookTitle').value;
             const author = document.getElementById('bookAuthor').value;
-            if (title) formData.append('book_title', title);
-            if (author) formData.append('book_author', author);
+            if (title) fd.append('book_title', title);
+            if (author) fd.append('book_author', author);
 
             try {
-                const response = await fetch('/api/convert', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    const text = await response.text();
-                    let parsed;
-                    try { parsed = JSON.parse(text); } catch { parsed = null; }
-
-                    const errorObj = parsed && parsed.detail ? {
+                const r = await fetch('/api/convert', { method: 'POST', body: fd });
+                if (!r.ok) {
+                    const text = await r.text();
+                    let parsed; try { parsed = JSON.parse(text); } catch { parsed = null; }
+                    if (r.status === 409) {
+                        msg.innerHTML = `<span style="color:#e65100">Conversion already exists.</span> <span style="color:#666;font-weight:normal">${parsed && parsed.detail ? parsed.detail : 'Already queued or running.'}</span>`;
+                        if (parsed && parsed.file_hash && parsed.task_id) {
+                            msg.innerHTML += ` <button class="toggle-details" onclick="switchTab('tasks')">Check in Task Manager</button>`;
+                        }
+                        pf.style.width = '0%'; pf.style.backgroundColor = '#ff9800';
+                        btn.disabled = false; btn.textContent = 'Add to Queue';
+                        throw new Error('Duplicate');
+                    }
+                    const eo = parsed && parsed.detail ? {
                         message: typeof parsed.detail === 'string' ? parsed.detail : JSON.stringify(parsed.detail),
-                        type: parsed.type || 'ServerError',
-                        traceback: parsed.traceback || '',
-                    } : {
-                        message: text || `Server error (${response.status})`,
-                        traceback: text || '',
-                    };
-
-                    showError(errorObj.message, errorObj);
-                    throw new Error(errorObj.message);
+                        type: parsed.type || 'ServerError', traceback: parsed.traceback || '',
+                    } : { message: text || `Server error (${r.status})`, traceback: text || '' };
+                    showError(eo.message, eo); throw new Error(eo.message);
                 }
-
-                const data = await response.json();
-                currentTaskId = data.task_id;
-                statusMessage.textContent = 'Conversion started!';
-                statusMessage.style.color = '';
-                progressFill.style.width = '20%';
-
-                pollStatus();
-
-            } catch (error) {
-                convertBtn.disabled = false;
-                convertBtn.textContent = 'Start Conversion';
+                const d = await r.json();
+                currentFileHash = d.file_hash; currentTaskId = d.task_id;
+                msg.textContent = 'Task queued! Check Task Manager for progress.'; msg.style.color = '#2e7d32';
+                pf.style.width = '100%'; pf.style.backgroundColor = '#4CAF50';
+                btn.disabled = false; btn.textContent = 'Add to Queue';
+            } catch(e) {
+                btn.disabled = false; btn.textContent = 'Add to Queue';
             }
         }
 
-        async function pollStatus() {
-            const statusMessage = document.getElementById('statusMessage');
-            const progressFill = document.getElementById('progressFill');
-            const downloadArea = document.getElementById('downloadArea');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const convertBtn = document.getElementById('convertBtn');
-
-            if (pollingInterval) clearInterval(pollingInterval);
-
-            pollingInterval = setInterval(async () => {
-                try {
-                    const response = await fetch(`/api/tasks/${currentTaskId}`);
-                    if (!response.ok) {
-                        const text = await response.text();
-                        let parsed;
-                        try { parsed = JSON.parse(text); } catch { parsed = null; }
-
-                        const errorObj = parsed && parsed.detail ? {
-                            message: typeof parsed.detail === 'string' ? parsed.detail : JSON.stringify(parsed.detail),
-                            type: parsed.type || 'ServerError',
-                            traceback: parsed.traceback || '',
-                        } : {
-                            message: text || `Server error (${response.status})`,
-                            traceback: text || '',
-                        };
-
-                        clearInterval(pollingInterval);
-                        showError(errorObj.message, errorObj);
-                        convertBtn.disabled = false;
-                        convertBtn.textContent = 'Try Again';
-                        return;
-                    }
-
-                    const data = await response.json();
-
-                    if (data.status === 'running') {
-                        statusMessage.textContent = data.progress;
-                        statusMessage.style.color = '';
-                        progressFill.style.width = '50%';
-                        progressFill.style.backgroundColor = '#2196F3';
-                    } else if (data.status === 'completed') {
-                        clearInterval(pollingInterval);
-                        progressFill.style.width = '100%';
-                        progressFill.style.backgroundColor = '#4CAF50';
-                        statusMessage.textContent = `Conversion completed! (Format: ${data.output_format})`;
-                        statusMessage.style.color = '';
-                        downloadArea.classList.add('visible');
-                        downloadBtn.href = `/api/download/${currentTaskId}`;
-                        downloadBtn.textContent = `Download ${data.output_filename}`;
-                        convertBtn.disabled = false;
-                        convertBtn.textContent = 'Convert Another';
-                    } else if (data.status === 'failed') {
-                        clearInterval(pollingInterval);
-                        const errorObj = data.error || {
-                            message: data.progress || 'Unknown error',
-                            type: 'Error',
-                            traceback: '',
-                        };
-                        showError(errorObj.message, errorObj);
-                        convertBtn.disabled = false;
-                        convertBtn.textContent = 'Try Again';
-                    } else if (data.status === 'pending') {
-                        statusMessage.textContent = data.progress || 'Queued...';
-                        statusMessage.style.color = '';
-                        progressFill.style.width = '10%';
-                        progressFill.style.backgroundColor = '#4CAF50';
-                    }
-
-                } catch (error) {
-                    clearInterval(pollingInterval);
-                    showError('Could not reach server: ' + error.message, null);
-                    convertBtn.disabled = false;
-                    convertBtn.textContent = 'Try Again';
-                }
-            }, 2000);
-        }
-
-        // ---- File Manager ----
-        function formatSize(bytes) {
-            if (!bytes) return '-';
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / 1048576).toFixed(1) + ' MB';
-        }
-
-        function formatDate(timestamp) {
-            if (!timestamp) return '-';
-            const d = new Date(timestamp * 1000);
+        // ---- Task Manager ----
+        function formatDate(ts) {
+            if (!ts) return '-';
+            const d = new Date(ts * 1000);
             return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
         }
-
-        function getProgressPercent(status) {
-            switch (status) {
-                case 'pending': return 10;
-                case 'running': return 50;
-                case 'completed': return 100;
-                case 'failed': return 0;
-                default: return 0;
-            }
-        }
-
-        function getProgressColor(status) {
-            switch (status) {
-                case 'pending': return '#ff9800';
-                case 'running': return '#2196F3';
-                case 'completed': return '#4CAF50';
-                case 'failed': return '#f44336';
-                default: return '#999';
-            }
-        }
+        function getPct(s) { switch(s) { case 'queued': return 10; case 'running': return 50; case 'completed': return 100; default: return 0; } }
+        function getCol(s) { switch(s) { case 'queued': return '#ff9800'; case 'running': return '#2196F3'; case 'completed': return '#4CAF50'; case 'failed': return '#f44336'; case 'cancelled': return '#9e9e9e'; default: return '#999'; } }
 
         function renderTasks(tasks) {
-            const container = document.getElementById('tasksContainer');
+            const c = document.getElementById('tasksContainer');
             if (!tasks || tasks.length === 0) {
-                container.innerHTML = '<div class="no-tasks">No files uploaded yet.</div>';
+                c.innerHTML = '<div class="no-tasks">No tasks yet.</div>';
+                document.getElementById('tmStats').innerHTML = '';
                 return;
             }
 
-            let html = `
-                <table class="task-table">
-                    <thead>
-                        <tr>
-                            <th>File</th>
-                            <th>Status</th>
-                            <th>Format</th>
-                            <th>Progress</th>
-                            <th>Created</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
+            // Stats
+            const counts = {};
+            for (const t of tasks) counts[t.status] = (counts[t.status] || 0) + 1;
+            let statsHtml = '';
+            for (const [s, n] of Object.entries(counts)) {
+                statsHtml += `<div class="tm-stat ${s}">${s}: ${n}</div>`;
+            }
+            document.getElementById('tmStats').innerHTML = statsHtml;
 
-            for (const task of tasks) {
-                const fmt = task.output_format || '-';
-                const fmtClass = (fmt === 'epub' || fmt === 'markdown') ? fmt : '';
-                const pct = getProgressPercent(task.status);
-                const col = getProgressColor(task.status);
+            if (tmInterval) clearInterval(tmInterval);
+            let html = `<table class="tm-table"><thead><tr>
+                <th>File</th><th>Format</th><th>Status</th><th>Progress</th><th>Created</th><th>Actions</th>
+            </tr></thead><tbody>`;
 
-                html += `
-                    <tr id="task-row-${task.task_id}">
-                        <td class="file-name" title="${task.filename || task.task_id}">${task.filename || task.task_id}</td>
-                        <td><span class="status-badge ${task.status}">${task.status}</span></td>
-                        <td><span class="format-badge ${fmtClass}">${fmt}</span></td>
-                        <td>
-                            <div class="progress-inline">
-                                <div class="progress-inline-fill" style="width:${pct}%;background-color:${col}"></div>
-                            </div>
-                            <span style="font-size:12px;color:#777">${task.progress || ''}</span>
-                        </td>
-                        <td class="date-cell">${formatDate(task.created_at)}</td>
-                        <td style="white-space:nowrap">`;
+            for (const t of tasks) {
+                const fmt = t.output_format || '-';
+                const fc = (fmt === 'epub' || fmt === 'markdown') ? fmt : '';
+                const pct = getPct(t.status);
+                const col = getCol(t.status);
+                const fh = t.file_hash;
+                const tid = t.task_id;
 
-                if (task.status === 'completed') {
-                    html += `<a class="action-btn download" href="/api/download/${task.task_id}">Download</a>`;
+                html += `<tr id="tr-${fh}-${tid}">
+                    <td class="tm-file-name" title="${t.filename}">${t.filename}</td>
+                    <td><span class="format-badge ${fc}">${fmt.toUpperCase()}</span></td>
+                    <td><span class="status-badge ${t.status}">${t.status}</span></td>
+                    <td><div class="tm-progress-inline"><div class="tm-progress-fill" style="width:${pct}%;background-color:${col}"></div></div><span class="tm-progress-label">${t.progress || ''}</span></td>
+                    <td class="tm-date">${formatDate(t.created_at)}</td>
+                    <td style="white-space:nowrap">`;
+
+                if (t.status === 'cancelled' || t.status === 'failed') {
+                    html += `<button class="action-btn start" onclick="doStartTask('${fh}','${tid}')">Start</button>`;
                 }
-
-                if (task.status === 'completed') {
+                if (t.status === 'running' || t.status === 'queued') {
+                    html += `<button class="action-btn stop" onclick="doStopTask('${fh}','${tid}')">Stop</button>`;
+                }
+                if (t.status === 'completed') {
+                    html += `<a class="action-btn download" href="/api/files/${fh}/download/${tid}">Download</a>`;
                     const other = fmt === 'markdown' ? 'epub' : 'markdown';
-                    html += `<button class="action-btn reconvert" onclick="openReconvertModal('${task.task_id}', '${task.filename || ''}')">To ${other.toUpperCase()}</button>`;
+                    html += `<button class="action-btn" style="background-color:#FF9800;color:white" onclick="openConvertModal('${fh}','${t.filename}','${other}')">To ${other.toUpperCase()}</button>`;
                 }
-
-                html += `<button class="action-btn delete" onclick="deleteTask('${task.task_id}')">Delete</button>`;
-
+                html += `<button class="action-btn delete" onclick="doDeleteTask('${fh}','${tid}')">Remove</button>`;
                 html += `</td></tr>`;
             }
-
-            html += '</tbody></table>';
-            container.innerHTML = html;
+            html += `</tbody></table>`;
+            c.innerHTML = html;
+            tmInterval = setInterval(() => liveUpdateTasks(tasks), 3000);
         }
 
         async function loadTasks() {
             try {
-                const response = await fetch('/api/tasks');
-                if (!response.ok) return;
-                const tasks = await response.json();
-                renderTasks(tasks);
-            } catch (e) {
-                // silently fail
-            }
+                const r = await fetch('/api/tasks');
+                if (!r.ok) return;
+                renderTasks(await r.json());
+            } catch(e) {}
         }
 
-        async function deleteTask(taskId) {
-            if (!confirm('Delete this file and all its outputs?')) return;
+        async function liveUpdateTasks(currentTasks) {
             try {
-                const response = await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' });
-                if (response.ok) {
-                    loadTasks();
+                const r = await fetch('/api/tasks');
+                if (!r.ok) return;
+                const updated = await r.json();
+                if (updated.length !== currentTasks.length) { loadTasks(); return; }
+                const uMap = {};
+                for (const t of updated) uMap[`${t.file_hash}:${t.task_id}`] = t;
+                let changed = false;
+                for (const t of updated) {
+                    const key = `${t.file_hash}:${t.task_id}`;
+                    const row = document.getElementById(`tr-${key.replace(/:/g, '-').replace(/-/g, '-')}`);
+                    // Use the id attribute directly
+                    const trRow = document.getElementById(`tr-${t.file_hash}-${t.task_id}`);
+                    if (!trRow) continue;
+                    const cur = uMap[key];
+                    if (!cur) continue;
+                    const pct = getPct(cur.status);
+                    const col = getCol(cur.status);
+                    trRow.querySelector('.status-badge').className = `status-badge ${cur.status}`;
+                    trRow.querySelector('.status-badge').textContent = cur.status;
+                    trRow.querySelector('.tm-progress-fill').style.width = pct + '%';
+                    trRow.querySelector('.tm-progress-fill').style.backgroundColor = col;
+                    trRow.querySelector('.tm-progress-label').textContent = cur.progress || '';
+                    const prev = currentTasks.find(ct => ct.file_hash === t.file_hash && ct.task_id === t.task_id);
+                    if (prev && prev.status !== cur.status) changed = true;
                 }
-            } catch (e) {
-                alert('Failed to delete');
-            }
+                if (changed) loadTasks();
+            } catch(e) {}
         }
 
-        // ---- Reconvert Modal ----
-        let reconvertTaskId = null;
-
-        function openReconvertModal(taskId, filename) {
-            reconvertTaskId = taskId;
-            document.getElementById('reconvertFileInfo').textContent = `File: ${filename}`;
-            document.getElementById('reconvertStatus').innerHTML = '';
-            document.getElementById('reconvertSubmit').disabled = false;
-            document.getElementById('reconvertSubmit').textContent = 'Convert';
-            document.getElementById('reconvertModal').classList.add('visible');
-
-            const fmt = document.getElementById('reconvertFormat');
-            if (fmt) {
-                fmt.value = '';
-            }
-        }
-
-        function closeReconvertModal() {
-            document.getElementById('reconvertModal').classList.remove('visible');
-            reconvertTaskId = null;
-        }
-
-        async function submitReconvert() {
-            if (!reconvertTaskId) return;
-
-            const submitBtn = document.getElementById('reconvertSubmit');
-            const statusDiv = document.getElementById('reconvertStatus');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Converting...';
-            statusDiv.innerHTML = '<span style="color:#2196F3">Starting reconvert...</span>';
-
-            const formData = new FormData();
-            formData.append('target_format', document.getElementById('reconvertFormat').value);
-            formData.append('ocr_size', document.getElementById('reconvertOcrSize').value);
-            formData.append('language', document.getElementById('reconvertLanguage').value);
-
-            const title = document.getElementById('reconvertTitle').value;
-            const author = document.getElementById('reconvertAuthor').value;
-            if (title) formData.append('book_title', title);
-            if (author) formData.append('book_author', author);
-
+        async function doStartTask(fh, tid) {
             try {
-                const response = await fetch(`/api/reconvert/${reconvertTaskId}`, {
+                const r = await fetch(`/api/files/${fh}/tasks/${tid}/start`, { method: 'POST' });
+                if (r.ok) loadTasks();
+                else { const t = await r.text(); alert('Failed: ' + t); }
+            } catch(e) { alert('Failed to start'); }
+        }
+
+        async function doStopTask(fh, tid) {
+            try {
+                const r = await fetch(`/api/files/${fh}/tasks/${tid}/stop`, { method: 'POST' });
+                if (r.ok) loadTasks();
+                else { const t = await r.text(); alert('Failed: ' + t); }
+            } catch(e) { alert('Failed to stop'); }
+        }
+
+        async function doDeleteTask(fh, tid) {
+            if (!confirm('Remove this conversion?')) return;
+            try {
+                const r = await fetch(`/api/files/${fh}/tasks/${tid}`, { method: 'DELETE' });
+                if (r.ok) loadTasks();
+            } catch(e) { alert('Failed to delete'); }
+        }
+
+        // ---- Settings ----
+        async function saveSettings() {
+            const result = document.getElementById('settingsResult');
+            const cfg = {
+                max_concurrent_tasks: parseInt(document.getElementById('setMaxConcurrent').value) || 2,
+                default_output_format: document.getElementById('setDefaultFormat').value,
+                default_ocr_size: document.getElementById('setDefaultOcrSize').value,
+                default_dpi: parseInt(document.getElementById('setDefaultDpi').value) || 300,
+                default_language: document.getElementById('setDefaultLanguage').value,
+                default_include_cover: document.getElementById('setDefaultIncludeCover').checked,
+                default_include_footnotes: document.getElementById('setDefaultIncludeFootnotes').checked,
+                default_toc_assumed: document.getElementById('setDefaultTocAssumed').checked,
+                default_ignore_pdf_errors: document.getElementById('setDefaultIgnorePdfErrors').checked,
+                default_ignore_ocr_errors: document.getElementById('setDefaultIgnoreOcrErrors').checked,
+            };
+            try {
+                const r = await fetch('/api/settings', {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cfg),
                 });
-
-                if (!response.ok) {
-                    const text = await response.text();
-                    let parsed;
-                    try { parsed = JSON.parse(text); } catch { parsed = null; }
-                    const msg = parsed && parsed.detail ? parsed.detail : text || 'Conversion failed';
-                    statusDiv.innerHTML = `<span style="color:#f44336">Error: ${msg}</span>`;
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Retry';
-                    return;
+                if (r.ok) {
+                    appSettings = cfg;
+                    applySettings(cfg);
+                    result.textContent = 'Settings saved!';
+                    result.className = 'save-settings-result success';
+                } else {
+                    const t = await r.text();
+                    result.textContent = 'Save failed: ' + t;
+                    result.className = 'save-settings-result error';
                 }
+            } catch(e) {
+                result.textContent = 'Save failed: ' + e.message;
+                result.className = 'save-settings-result error';
+            }
+        }
 
-                statusDiv.innerHTML = '<span style="color:#2196F3">Conversion in progress... monitoring status.</span>';
-
+        // ---- Convert Modal ----
+        let convertFileHash = null;
+        let convertTarget = null;
+        function openConvertModal(fh, filename, target) {
+            convertFileHash = fh; convertTarget = target;
+            document.getElementById('convertTargetLabel').textContent = target.toUpperCase();
+            document.getElementById('convertFileInfo').textContent = `File: ${filename}`;
+            document.getElementById('convertStatus').innerHTML = '';
+            document.getElementById('convertSubmit').disabled = false;
+            document.getElementById('convertSubmit').textContent = 'Convert';
+            document.getElementById('convertModal').classList.add('visible');
+        }
+        function closeConvertModal() {
+            document.getElementById('convertModal').classList.remove('visible');
+            convertFileHash = null; convertTarget = null;
+        }
+        async function submitConvert() {
+            if (!convertFileHash || !convertTarget) return;
+            const sb = document.getElementById('convertSubmit');
+            const sd = document.getElementById('convertStatus');
+            sb.disabled = true; sb.textContent = 'Converting...';
+            sd.innerHTML = '<span style="color:#2196F3">Queuing conversion...</span>';
+            const fd = new FormData();
+            fd.append('target_format', convertTarget);
+            fd.append('ocr_size', document.getElementById('convertOcrSize').value);
+            fd.append('language', document.getElementById('convertLanguage').value);
+            const title = document.getElementById('convertTitle').value;
+            const author = document.getElementById('convertAuthor').value;
+            if (title) fd.append('book_title', title);
+            if (author) fd.append('book_author', author);
+            try {
+                const r = await fetch(`/api/files/${convertFileHash}/convert`, { method: 'POST', body: fd });
+                if (!r.ok) {
+                    const t = await r.text();
+                    let p; try { p = JSON.parse(t); } catch { p = null; }
+                    sd.innerHTML = `<span style="color:#f44336">Error: ${p && p.detail ? p.detail : t || 'Conversion failed'}</span>`;
+                    sb.disabled = false; sb.textContent = 'Retry'; return;
+                }
+                const d = await r.json();
+                const nt = d.task_id;
+                sd.innerHTML = '<span style="color:#2196F3">Conversion queued...</span>';
                 let polls = 0;
-                const maxPolls = 600;
                 const poll = setInterval(async () => {
                     polls++;
                     try {
-                        const r = await fetch(`/api/tasks/${reconvertTaskId}`);
-                        if (!r.ok) return;
-                        const d = await r.json();
-
-                        if (d.status === 'running') {
-                            statusDiv.innerHTML = `<span style="color:#2196F3">${d.progress}</span>`;
-                        } else if (d.status === 'completed') {
+                        const rr = await fetch(`/api/files/${convertFileHash}/tasks/${nt}`);
+                        if (!rr.ok) return;
+                        const dd = await rr.json();
+                        if (dd.status === 'running') sd.innerHTML = `<span style="color:#2196F3">${dd.progress}</span>`;
+                        else if (dd.status === 'queued') sd.innerHTML = '<span style="color:#ff9800">Queued - waiting for available slot...</span>';
+                        else if (dd.status === 'completed') {
+                            clearInterval(poll); sd.innerHTML = `<span style="color:#4CAF50">Done!</span>`;
+                            sb.disabled = false; sb.textContent = 'Done'; loadTasks();
+                        } else if (dd.status === 'failed') {
                             clearInterval(poll);
-                            statusDiv.innerHTML = `<span style="color:#4CAF50">Done! Converted to ${d.output_format}.</span>`;
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Done';
-                            loadTasks();
-                        } else if (d.status === 'failed') {
-                            clearInterval(poll);
-                            const err = d.error || { message: d.progress || 'Unknown error' };
-                            statusDiv.innerHTML = `<span style="color:#f44336">Failed: ${err.message}</span>`;
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Retry';
+                            const err = dd.error || { message: dd.progress || 'Unknown error' };
+                            sd.innerHTML = `<span style="color:#f44336">Failed: ${err.message}</span>`;
+                            sb.disabled = false; sb.textContent = 'Retry';
+                        } else if (dd.status === 'cancelled') {
+                            clearInterval(poll); sd.innerHTML = `<span style="color:#7b1fa2">Cancelled.</span>`;
+                            sb.disabled = false; sb.textContent = 'Close'; loadTasks();
                         }
-
-                        if (polls > maxPolls) {
-                            clearInterval(poll);
-                            statusDiv.innerHTML = '<span style="color:#ff9800">Poll timeout - check File Manager for status.</span>';
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Close';
-                            loadTasks();
-                        }
-                    } catch (e) {
-                        clearInterval(poll);
-                        statusDiv.innerHTML = `<span style="color:#f44336">Poll error: ${e.message}</span>`;
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Close';
-                    }
+                        if (polls > 600) { clearInterval(poll); sd.innerHTML = '<span style="color:#ff9800">Poll timeout - check Task Manager.</span>'; sb.disabled = false; sb.textContent = 'Close'; loadTasks(); }
+                    } catch(e) { clearInterval(poll); sd.innerHTML = `<span style="color:#f44336">Poll error: ${e.message}</span>`; sb.disabled = false; sb.textContent = 'Close'; }
                 }, 2000);
-
-            } catch (error) {
-                statusDiv.innerHTML = `<span style="color:#f44336">Network error: ${error.message}</span>`;
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Retry';
+            } catch(error) {
+                sd.innerHTML = `<span style="color:#f44336">Network error: ${error.message}</span>`;
+                sb.disabled = false; sb.textContent = 'Retry';
             }
         }
     </script>
